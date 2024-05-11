@@ -11,7 +11,7 @@ if [ -f /etc/os-release ]; then
     VER=$VERSION_ID
 fi
 
-if [[ $VER != "24.04" ]]; then
+if [[ $VER != "22.04" ]]; then
   echo "Wrong Ubuntu Version - Please Use Ubuntu Jammy"
   exit
 fi
@@ -25,7 +25,7 @@ sudo apt update
 
 sudo apt install ros-humble-desktop
 
-if grep -Fxq "source /opt/ros/humble/setup.bash" my_list.txt
+if grep -Fxq "source /opt/ros/humble/setup.bash" ~/.bashrc
 then
   echo "Already Sourced"
 else 
@@ -35,30 +35,31 @@ fi
 source /opt/ros/humble/setup.bash
 
 sudo apt install ros-dev-tools
+sudo rosdep init
 rosdep update
 
 while true; do
 
 read -p "Do you want to install third party workspaces? (y/n) " yn
-
-case $yn in 
-	[yY] ) echo installing;
-    THIRD = true;
-		break;;
-	[nN] ) echo continuing;
-		THIRD = false;
-    break;;
-	* ) echo invalid response;;
-esac
+  THIRD="false"
+  case $yn in 
+	  [yY] ) echo installing;
+      THIRD="true"
+		  break;;
+	  [nN] ) echo continuing;
+		  THIRD="false"
+      break;;
+	  * ) echo invalid response;;
+  esac
 
 done
 
-if [ $THIRD = true]; then
+if [ $THIRD = "true" ]; then
   
-  THIRD_PARTY = "~/workspaces/3rd_party_ws"
+  THIRD_PARTY="/workspaces/3rd_party_ws"
 
-  if ![ -d "$THIRD_PARTY/src" ]; then
-    mkdir -p "$THIRD_PARTY/src"
+  if ![ -d "${THIRD_PARTY}/src" ]; then
+    mkdir -p "${THIRD_PARTY}/src"
   fi
 
   pushd $THIRD_PARTY
@@ -67,14 +68,13 @@ if [ $THIRD = true]; then
   rosdep install --from-paths src --ignore-src --rosdistro humble -y
   colcon build --cmake-args -DCMAKE_BUILD_TYPE=Release
   echo "source $THIRD_PARTY/install/setup.bash" >> ~/.bashrc
-  source $THIRD_PARTY_WS/install/setup.bash
-
+  source ${THIRD_PARTY_WS}/install/setup.bash
 fi
 
-MAIN = "~/workspaces/ros2_ws"
-
-if ![ -d "$MAIN/src" ]; then
-  mkdir -p "$MAIN/src"
+MAIN="/workspaces/ros2_ws"
+echo "${MAIN}/src"
+if [ ! -d "${MAIN}/src" ]; then
+  mkdir -p "${MAIN}/src"
 fi
 
 
