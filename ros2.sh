@@ -54,25 +54,33 @@ read -p "Do you want to install third party workspaces? (y/n) " yn
 
 done
 
-if [ $THIRD = "true" ]; then
-  
-  THIRD_PARTY="/workspaces/3rd_party_ws"
+WORKSPACE="/workspaces"
+sudo mkdir -p ${WORKSPACE}
+sudo chmod -R 777 ${WORKSPACE}
 
-  if ![ -d "${THIRD_PARTY}/src" ]; then
+if [ $THIRD = "true" ]; then
+  THIRD_PARTY="${WORKSPACE}/3rd_party_ws"
+  
+  if [ ! -d "${THIRD_PARTY}/src" ]; then
     mkdir -p "${THIRD_PARTY}/src"
   fi
-
+  
   pushd $THIRD_PARTY
-  git clone -b ros2 https://github.com/ros/urdf_tutorial.git $THIRD_PARTY/src/urdf_tutorial
-  git clone -b humble https://github.com/UniversalRobots/Universal_Robots_ROS2_Gazebo_Simulation.git $THIRD_PARTY/src/Universal_Robots_ROS2_Gazebo_Simulation
-  rosdep install --from-paths src --ignore-src --rosdistro humble -y
-  colcon build --cmake-args -DCMAKE_BUILD_TYPE=Release
-  echo "source $THIRD_PARTY/install/setup.bash" >> ~/.bashrc
+  #git clone -b ros2 https://github.com/ros/urdf_tutorial.git ${THIRD_PARTY}/src/urdf_tutorial
+  #git clone -b humble https://github.com/UniversalRobots/Universal_Robots_ROS2_Gazebo_Simulation.git ${THIRD_PARTY}/src/Universal_Robots_ROS2_Gazebo_Simulation
+  #rosdep install --from-paths src --ignore-src --rosdistro humble -y
+  #colcon build --cmake-args -DCMAKE_BUILD_TYPE=Release
+  
+  if grep -Fxq "source $THIRD_PARTY/install/setup.bash" ~/.bashrc
+  then
+    echo "Already Sourced"
+  else 
+    echo "source $THIRD_PARTY/install/setup.bash" >> ~/.bashrc
+  fi
   source ${THIRD_PARTY_WS}/install/setup.bash
 fi
 
-MAIN="/workspaces/ros2_ws"
-echo "${MAIN}/src"
+MAIN="${WORKSPACE}/ros2_ws"
 if [ ! -d "${MAIN}/src" ]; then
   mkdir -p "${MAIN}/src"
 fi
