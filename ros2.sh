@@ -66,10 +66,10 @@ if [ $THIRD = "true" ]; then
   fi
   
   pushd $THIRD_PARTY
-  #git clone -b ros2 https://github.com/ros/urdf_tutorial.git ${THIRD_PARTY}/src/urdf_tutorial
-  #git clone -b humble https://github.com/UniversalRobots/Universal_Robots_ROS2_Gazebo_Simulation.git ${THIRD_PARTY}/src/Universal_Robots_ROS2_Gazebo_Simulation
-  #rosdep install --from-paths src --ignore-src --rosdistro humble -y
-  #colcon build --cmake-args -DCMAKE_BUILD_TYPE=Release
+  git clone -b ros2 https://github.com/ros/urdf_tutorial.git ${THIRD_PARTY}/src/urdf_tutorial
+  git clone -b humble https://github.com/UniversalRobots/Universal_Robots_ROS2_Gazebo_Simulation.git ${THIRD_PARTY}/src/Universal_Robots_ROS2_Gazebo_Simulation
+  rosdep install --from-paths src --ignore-src --rosdistro humble -y
+  colcon build --cmake-args -DCMAKE_BUILD_TYPE=Release
   
   if grep -Fxq "source $THIRD_PARTY/install/setup.bash" ~/.bashrc
   then
